@@ -92,7 +92,7 @@ function getPeopleInfoHtml() {
         info[id] += 1;
     }
 
-    var h = "<li><b>Unknown:</b> "+info['-1']+"</li>";
+    var h = "<li><b>Desconhecida:</b> "+info['-1']+"</li>";
     var len = people.length;
     for (var i = 0; i < len; i++) {
         h += "<li><b>"+people[i]+":</b> "+info[i]+"</li>";
@@ -106,7 +106,7 @@ function redrawPeople() {
 
     var context = {people: people};
     $("#defaultPersonDropdown").html(defaultPersonTmpl(context));
-
+    console.log("aqui")
     $("#peopleInfo").html(getPeopleInfoHtml());
 }
 
@@ -158,7 +158,7 @@ function createSocket(address, name) {
     socketName = name;
     socket.binaryType = "arraybuffer";
     socket.onopen = function() {
-        $("#serverStatus").html("Connected to " + name);
+        $("#serverStatus").html("Conectado em " + name);
         sentTimes = [];
         receivedTimes = [];
         tok = defaultTok;
@@ -192,12 +192,12 @@ function createSocket(address, name) {
             });
             redrawPeople();
         } else if (j.type == "IDENTITIES") {
-            var h = "Last updated: " + (new Date()).toTimeString();
+            var h = "Última atualização: " + (new Date()).toTimeString();
             h += "<ul>";
             var len = j.identities.length
             if (len > 0) {
                 for (var i = 0; i < len; i++) {
-                    var identity = "Unknown";
+                    var identity = "Desconhecida";
                     var idIdx = j.identities[i];
                     if (idIdx != -1) {
                         identity = people[idIdx];
@@ -205,13 +205,13 @@ function createSocket(address, name) {
                     h += "<li>" + identity + "</li>";
                 }
             } else {
-                h += "<li>Nobody detected.</li>";
+                h += "<li>Ninguém Detectado.</li>";
             }
             h += "</ul>"
             $("#peopleInVideo").html(h);
         } else if (j.type == "ANNOTATED") {
             $("#detectedFaces").html(
-                "<img src='" + j['content'] + "' width='430px'></img>"
+                "<img src='" + j['content'] + "' width='830px'></img>"
             )
         } else if (j.type == "TSNE_DATA") {
             BootstrapDialog.show({

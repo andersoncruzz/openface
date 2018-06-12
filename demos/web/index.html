@@ -32,11 +32,11 @@ limitations under the License.
                 <ul class='tabs'>
                     <li class='tab-link' data-tab='tab-preview'
                         id='tab-preview-button'>
-                        Preview
+                        Visualização
                     </li>
                     <li class='tab-link current' data-tab='tab-annotated'
                         id='tab-annotated-button'>
-                        Annotated
+                        Treinamento
                     </li>
                 </ul>
                 <div id='tab-preview' class='tab-content'>
@@ -48,10 +48,10 @@ limitations under the License.
                 </div>
             </div>
             <div class="content">
-                <h2>People in Video</h2>
+                <h2>Pessoas no Vídeo</h2>
                 <div id="peopleInVideo"></div>
 
-                <h2>Servers: <span id="serverStatus"></span></h2>
+                <h2>Servidores: <span id="serverStatus"></span></h2>
                 <!-- <div id="serverStatus"></div> -->
                 <div class="btn-group" role="group" id="serverBtn">
                     <button type="button" class="btn btn-default active">Local</button>
@@ -77,7 +77,7 @@ limitations under the License.
                 </ul>
                 -->
 
-                <h2>Training
+                <h2>Treinamento
                     <input type="checkbox" checked data-toggle="toggle"
                            id="trainingChk">
                 </h2>
@@ -86,7 +86,7 @@ limitations under the License.
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button"
                                 id="addPersonBtn">
-                            Add Person
+                            Adicionar Pessoa
                         </button>
                     </span>
                 </div>
@@ -94,7 +94,7 @@ limitations under the License.
                 <div>
                     <button class="btn btn-default" type="button"
                             id="viewTSNEBtn">
-                        Visualize with TSNE
+                        Visualizar no espaço
                     </button>
                 </div>
                 <br/>
@@ -104,13 +104,13 @@ limitations under the License.
                             type="button" id="defaultPersonDropdownBtn"
                             data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="true">
-                        Default Person
+                        Pessoa Padrão
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu"
                         aria-labelledby="defaultPersonDropdown"
                         id="defaultPersonDropdownMenu">
-                        <li><a href="javascript:defaultPerson=-1">Unknown</a></li>
+                        <li><a href="javascript:defaultPerson=-1">Desconhecido</a></li>
                         {{#each people}}
                         <li>
                             <a href="javascript:defaultPerson={{@index}}">
@@ -133,7 +133,7 @@ limitations under the License.
                 <script id="peopleTableTmpl" type="text/x-handlebars-template">
                     <thead><tr>
                         <th></th>
-                        <th>Unknown</th>
+                        <th>Desconhecido</th>
                         {{#each people}}
                         <th>{{this}}</th>
                         {{/each}}

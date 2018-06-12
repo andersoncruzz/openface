@@ -41,7 +41,8 @@ import urllib
 import base64
 
 from sklearn.decomposition import PCA
-from sklearn.grid_search import GridSearchCV
+#from sklearn.grid_search import GridSearchCV
+from sklearn.model_selection import GridSearchCV
 from sklearn.manifold import TSNE
 from sklearn.svm import SVC
 
@@ -187,7 +188,6 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                     # print(rep)
                     X.append(rep)
                     y.append(-1)
-
         X = np.vstack(X)
         y = np.array(y)
         return (X, y)
@@ -245,7 +245,12 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                  'gamma': [0.001, 0.0001],
                  'kernel': ['rbf']}
             ]
+            print(X)
+            print(y)
+            print("[+] len: ", len(X), "-", len(X[0]))
+            #X.reshape(1, -1)
             self.svm = GridSearchCV(SVC(C=1), param_grid, cv=5).fit(X, y)
+            print("[+] pos treino")
 
     def processFrame(self, dataURL, identity):
         head = "data:image/jpeg;base64,"
@@ -270,9 +275,9 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
         #     return
 
         identities = []
-        # bbs = align.getAllFaceBoundingBoxes(rgbFrame)
-        bb = align.getLargestFaceBoundingBox(rgbFrame)
-        bbs = [bb] if bb is not None else []
+        bbs = align.getAllFaceBoundingBoxes(rgbFrame)
+        #bb = align.getLargestFaceBoundingBox(rgbFrame)
+        #bbs = [bb] if bb is not None else []
         for bb in bbs:
             # print(len(bbs))
             landmarks = align.findLandmarks(rgbFrame, bb)
@@ -308,7 +313,10 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                     elif len(self.people) == 1:
                         identity = 0
                     elif self.svm:
-                        identity = self.svm.predict(rep)[0]
+                        print("[+] svm classifier")
+                        inst = np.array([rep])
+                        print(inst)
+                        identity = self.svm.predict(inst)[0]
                     else:
                         print("hhh")
                         identity = -1
@@ -327,7 +335,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                     if len(self.people) == 1:
                         name = self.people[0]
                     else:
-                        name = "Unknown"
+                        name = "Desconhecido"
                 else:
                     name = self.people[identity]
                 cv2.putText(annotatedFrame, name, (bb.left(), bb.top() - 10),
