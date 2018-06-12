@@ -45,7 +45,7 @@ from sklearn.decomposition import PCA
 from sklearn.model_selection import GridSearchCV
 from sklearn.manifold import TSNE
 from sklearn.svm import SVC
-
+from sklearn.svm import OneClassSVM
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -72,7 +72,7 @@ parser.add_argument('--unknown', type=bool, default=False,
                     help='Try to predict unknown people')
 parser.add_argument('--port', type=int, default=9000,
                     help='WebSocket Port')
-
+#dim = 96
 args = parser.parse_args()
 
 align = openface.AlignDlib(args.dlibFacePredictor)
@@ -100,6 +100,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
         self.training = True
         self.people = []
         self.svm = None
+        self.svm_unknown = None
         if args.unknown:
             self.unknownImgs = np.load("./examples/web/unknown.npy")
 
@@ -231,6 +232,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
         d = self.getData()
         if d is None:
             self.svm = None
+            self.svm_unknown = None
             return
         else:
             (X, y) = d
@@ -250,6 +252,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
             print("[+] len: ", len(X), "-", len(X[0]))
             #X.reshape(1, -1)
             self.svm = GridSearchCV(SVC(C=1), param_grid, cv=5).fit(X, y)
+            self.svm_unknown = OneClassSVM(nu=0.4, kernel = "rbf", gamma="auto").fit(X)
             print("[+] pos treino")
 
     def processFrame(self, dataURL, identity):
@@ -315,8 +318,12 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                     elif self.svm:
                         print("[+] svm classifier")
                         inst = np.array([rep])
-                        print(inst)
-                        identity = self.svm.predict(inst)[0]
+                        #print(inst)
+                        if True:
+                        #if self.svm_unknown.predict(inst) == 1:
+                            identity = self.svm.predict(inst)[0]
+                        else:
+                            identity = -2
                     else:
                         print("hhh")
                         identity = -1
@@ -336,8 +343,12 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                         name = self.people[0]
                     else:
                         name = "Desconhecido"
+                elif identity == -2:
+                    name = "unknown"
                 else:
                     name = self.people[identity]
+                print(identities)
+                print(name)
                 cv2.putText(annotatedFrame, name, (bb.left(), bb.top() - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.75,
                             color=(152, 255, 204), thickness=2)
